@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -238,6 +238,24 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  -- JS/TS LSP first custom plugin
+
+  --  {
+  --    'rbong/vim-flog', -- Git graph. :Flog
+  --    lazy = true,
+  --    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
+  --    dependencies = {
+  --      'tpope/vim-fugitive',
+  --    },
+  --  },
+
+  --  {
+  --    'pmizio/typescript-tools.nvim', -- typescript LSP
+  --    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+  --    opts = {},
+  --  },
+
+
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
@@ -405,6 +423,14 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+        defaults = {
+          file_ignore_patterns = { 'node_modules' },
+        },
+        pickers = {
+          find_files = {
+            find_command = { 'rg', '--files', '--hidden', '--no-ignore', '-g', '!node_modules/*', '-g', '!.git/*' },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -827,7 +853,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'super-tab',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
