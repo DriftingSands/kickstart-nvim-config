@@ -238,23 +238,60 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  -- {
+  --   'Exafunction/windsurf.vim',
+  --   event = 'BufEnter',
+  --   config = function()
+  --     -- Change '<C-g>' here to any keycode you like.
+  --     vim.keymap.set('i', '<C-g>', function()
+  --       return vim.fn['codeium#Accept']()
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<c-;>', function()
+  --       return vim.fn['codeium#CycleCompletions'](1)
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<c-,>', function()
+  --       return vim.fn['codeium#CycleCompletions'](-1)
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<c-x>', function()
+  --       return vim.fn['codeium#Clear']()
+  --     end, { expr = true, silent = true })
+  --   end,
+  -- },
+  --
+  -- Tabs
+  {
+    'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function()
+      vim.g.barbar_auto_setup = false
+    end,
+    opts = {
+      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+      -- animation = true,
+      -- insert_at_start = true,
+      -- …etc.
+    },
+    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+  },
+
+  {
+    'rbong/vim-flog', -- Git graph. :Flog
+    lazy = true,
+    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
+    dependencies = {
+      'tpope/vim-fugitive',
+    },
+  },
+
   -- JS/TS LSP first custom plugin
-
-  --  {
-  --    'rbong/vim-flog', -- Git graph. :Flog
-  --    lazy = true,
-  --    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
-  --    dependencies = {
-  --      'tpope/vim-fugitive',
-  --    },
-  --  },
-
-  --  {
-  --    'pmizio/typescript-tools.nvim', -- typescript LSP
-  --    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-  --    opts = {},
-  --  },
-
+  -- {
+  --   'pmizio/typescript-tools.nvim', -- typescript LSP
+  --   dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+  --   opts = {},
+  -- },
 
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
@@ -312,6 +349,9 @@ require('lazy').setup({
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
+      layout = {
+        height = { min = 5, max = 25 },
+      },
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
       delay = 0,
@@ -355,7 +395,8 @@ require('lazy').setup({
       -- Document existing key chains
       spec = {
         { '<leader>s', group = '[S]earch' },
-        { '<leader>t', group = '[T]oggle' },
+        { '<leader>T', group = '[T]oggle' },
+        { '<leader>t', group = '[t]abs' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -637,7 +678,7 @@ require('lazy').setup({
           --
           -- This may be unwanted, since they displace some of your code
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-            map('<leader>th', function()
+            map('<leader>TH', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
           end
@@ -905,7 +946,7 @@ require('lazy').setup({
       ---@diagnostic disable-next-line: missing-fields
       require('tokyonight').setup {
         styles = {
-          comments = { italic = false }, -- Disable italics in comments
+          comments = { italic = true }, -- Disable italics in comments
         },
       }
 
@@ -994,8 +1035,8 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -1032,3 +1073,29 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+local map = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+
+vim.keymap.set('n', '<leader>tk', '<Cmd>BufferPrevious<CR>', opts)
+vim.keymap.set('n', '<leader>tj', '<Cmd>BufferNext<CR>', opts)
+vim.keymap.set('n', '<leader>tK', '<Cmd>BufferMovePrevious<CR>', opts)
+vim.keymap.set('n', '<leader>tJ', '<Cmd>BufferMoveNext<CR>', opts)
+vim.keymap.set('n', '<leader>th', '<Cmd>BufferGoto 1<CR>', { noremap = true, silent = true, desc = 'Go to first' })
+vim.keymap.set('n', '<leader>tl', '<Cmd>BufferLast<CR>', { noremap = true, silent = true, desc = 'Go to last' })
+vim.keymap.set('n', '<leader>tf', '<Cmd>BufferPick<CR>', { noremap = true, silent = true, desc = 'Tab find' })
+vim.keymap.set('n', '<leader>tq', '<Cmd>BufferClose<CR>', opts)
+
+vim.opt.wrap = false
+vim.keymap.set('i', '<C-BS`>', '<C-W>', opts) -- ctrl+backspace in insert mode. set: "bindings = [ { key = "Back", mods = "Control", chars = "\u0017" } ]" in alacritty config
+vim.keymap.set('i', '<C-Del>', '<C-O>dw', opts) -- ctrl+del in insert mode.
+vim.keymap.set({ 'n', 'i' }, '<C-s>', '<Esc>:w<CR>', opts) -- ctrl+s save
+vim.opt.spelllang = 'en_us'
+vim.opt.spell = true
+
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = 'markdown',
+--   callback = function()
+--     vim.wo.wrap = true
+--   end,
+-- })
