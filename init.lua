@@ -265,7 +265,9 @@ require('lazy').setup({
   --     end, { expr = true, silent = true })
   --   end,
   -- },
-  --
+
+  { 'rafamadriz/friendly-snippets' },
+
   -- Tabs
   {
     'romgrk/barbar.nvim',
@@ -295,14 +297,14 @@ require('lazy').setup({
   },
 
   -- JS/TS LSP first custom plugin
-  -- {
-  --   'pmizio/typescript-tools.nvim', -- typescript LSP
-  --   dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-  --   opts = {},
-  -- },
+  {
+    'pmizio/typescript-tools.nvim', -- typescript LSP
+    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    opts = {},
+  },
 
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  -- 'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -866,12 +868,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
         opts = {},
       },
@@ -943,6 +945,11 @@ require('lazy').setup({
     },
   },
 
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+  },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -961,7 +968,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'catppuccin'
     end,
   },
 
@@ -1094,12 +1101,16 @@ vim.keymap.set('n', '<leader>tl', '<Cmd>BufferLast<CR>', { noremap = true, silen
 vim.keymap.set('n', '<leader>tf', '<Cmd>BufferPick<CR>', { noremap = true, silent = true, desc = 'Tab find' })
 vim.keymap.set('n', '<leader>tq', '<Cmd>BufferClose<CR>', opts)
 
-vim.opt.wrap = false
+vim.o.wrap = false
 vim.keymap.set('i', '<C-BS`>', '<C-W>', opts) -- ctrl+backspace in insert mode. set: "bindings = [ { key = "Back", mods = "Control", chars = "\u0017" } ]" in alacritty config
 vim.keymap.set('i', '<C-Del>', '<C-O>dw', opts) -- ctrl+del in insert mode.
 vim.keymap.set({ 'n', 'i' }, '<C-s>', '<Esc>:w<CR>', opts) -- ctrl+s save
-vim.opt.spelllang = 'en_us'
-vim.opt.spell = true
+vim.o.spelllang = 'en_us'
+vim.o.spell = true
+
+vim.o.expandtab = true
+vim.o.shiftwidth = 2
+vim.o.tabstop = 2
 
 -- vim.api.nvim_create_autocmd('FileType', {
 --   pattern = 'markdown',
@@ -1107,3 +1118,20 @@ vim.opt.spell = true
 --     vim.wo.wrap = true
 --   end,
 -- })
+
+-- save last chosen colorscheme
+local last_colorscheme = vim.fn.stdpath 'data' .. '/last_colorscheme.vim'
+if vim.fn.filereadable(last_colorscheme) == 1 then
+  vim.cmd('source ' .. last_colorscheme)
+end
+
+vim.api.nvim_create_autocmd('ColorScheme', {
+  callback = function()
+    local scheme = vim.g.colors_name or ''
+    local file = io.open(vim.fn.stdpath 'data' .. '/last_colorscheme.vim', 'w')
+    if file then
+      file:write('colorscheme ' .. scheme .. '\n')
+      file:close()
+    end
+  end,
+})
